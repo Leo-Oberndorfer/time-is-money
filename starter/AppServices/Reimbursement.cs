@@ -1,21 +1,20 @@
 namespace AppServices;
 
-public interface IReimbursementCalculator
+public interface ICommuteDecisionService
 {
-    ReimbursementResult CalculateReimbursement(Travel travel);
+    CommuteAnalysis Analyze(Commute commute);
 }
 
-public record ReimbursementResult(
-    decimal Mileage,
-    decimal PerDiem,
-    decimal Expenses
-);
+public record CommuteAnalysis(
+    DateTimeOffset CarArrivalUtc,
+    DateTimeOffset PublicArrivalUtc,
+    int CarPoints,
+    int PublicPoints,
+    DecisionVerdict Verdict,
+    decimal? EurPerMinutePerPerson);
 
-public class ReimbursementCalculator : IReimbursementCalculator
+public class CommuteDecisionService : ICommuteDecisionService
 {
-    public ReimbursementResult CalculateReimbursement(Travel travel)
-    {
-        // TODO: Add your code here
-        throw new NotImplementedException();
-    }
+    public CommuteAnalysis Analyze(Commute commute)
+        => throw new NotImplementedException("Decision and reimbursement logic is part of the exercise.");
 }

@@ -1,46 +1,56 @@
-﻿namespace AppServices;
+namespace AppServices;
 
-public class TravelEntity
+public enum CommuteTravelMethod
+{
+    Car = 1,
+    Public = 2
+}
+
+public enum DecisionVerdict
+{
+    ChosenBetter = 1,
+    ChosenWorse = 2,
+    NoDifference = 3
+}
+
+public class CommuteEntity
 {
     public int Id { get; set; }
 
-    public DateTimeOffset Start { get; set; }
-    public DateTimeOffset End { get; set; }
-    public string TravelerName { get; set; } = string.Empty;
-    public string Purpose { get; set; } = string.Empty;
+    public DateTimeOffset DepartureUtc { get; set; }
+    public DateTimeOffset? ScheduledArrivalUtc { get; set; }
+    public string Destination { get; set; } = string.Empty;
+    public CommuteTravelMethod ChosenTravel { get; set; }
 
-    /// <summary>
-    /// Persisted reimbursement calculation result.
-    /// </summary>
-    public decimal Mileage { get; set; }
-    public decimal PerDiem { get; set; }
-    public decimal Expenses { get; set; }
+    public CarCommuteDataEntity CarData { get; set; } = new();
+    public PublicCommuteDataEntity PublicData { get; set; } = new();
 
-    public List<TravelReimbursementEntity> Reimbursements { get; set; } = [];
+    // Calculated fields (persisted once the logic is implemented).
+    public int CarPoints { get; set; }
+    public int PublicPoints { get; set; }
+    public DecisionVerdict Verdict { get; set; } = DecisionVerdict.NoDifference;
+    public decimal? EurPerMinutePerPerson { get; set; }
 }
 
-public enum TravelReimbursementType
-{
-    DriveWithPrivateCar = 1,
-    Expense = 2
-}
-
-public abstract class TravelReimbursementEntity
+public class CarCommuteDataEntity
 {
     public int Id { get; set; }
+    public int CommuteId { get; set; }
+    public CommuteEntity? Commute { get; set; }
 
-    public int TravelId { get; set; }
-    public TravelEntity? Travel { get; set; }
-
-    public string Description { get; set; } = string.Empty;
+    public int AdditionalPassengers { get; set; }
+    public decimal DistanceKm { get; set; }
+    public int DurationMinutes { get; set; }
+    public decimal AverageConsumptionLPer100Km { get; set; }
+    public decimal FuelPricePerLiterEur { get; set; }
 }
 
-public sealed class DriveWithPrivateCarReimbursementEntity : TravelReimbursementEntity
+public class PublicCommuteDataEntity
 {
-    public int KM { get; set; }
-}
+    public int Id { get; set; }
+    public int CommuteId { get; set; }
+    public CommuteEntity? Commute { get; set; }
 
-public sealed class ExpenseReimbursementEntity : TravelReimbursementEntity
-{
-    public int Amount { get; set; }
+    public int DurationMinutes { get; set; }
+    public bool Delayed { get; set; }
 }

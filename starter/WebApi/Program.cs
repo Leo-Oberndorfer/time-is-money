@@ -6,8 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddSqliteDbContext<ApplicationDataContext>("database");
 builder.Services.AddOpenApi();
-builder.Services.AddScoped<IReimbursementCalculator, ReimbursementCalculator>();
-builder.Services.AddScoped<ITravelFileParser, TravelFileParser>();
+builder.Services.AddScoped<ICommuteDecisionService, CommuteDecisionService>();
+builder.Services.AddScoped<ICommuteFileParser, CommuteFileParser>();
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
@@ -21,6 +21,6 @@ app.UseHttpsRedirection();
 app.MapGet("/ping", () => "pong")
     .WithDescription("A simple ping endpoint to check if the service is running.");
 
-app.MapTravelEndpoints();
+app.MapCommuteEndpoints();
 
 app.Run();

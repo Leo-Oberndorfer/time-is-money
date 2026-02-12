@@ -1,87 +1,75 @@
-using System.Globalization;
-
 namespace AppServices;
 
-/// <summary>
-/// Interface for parsing a travel file
-/// </summary>
-public interface ITravelFileParser
+public interface ICommuteFileParser
 {
-    /// <summary>
-    /// Parses travel file content into a <see cref="Travel"/> object
-    /// </summary>
-    /// <param name="textContent">Travel file content as string</param>
-    /// <returns>Parsed <see cref="Travel"/> object</returns>
-    Travel ParseTravel(string csvContent);
+    Commute ParseCommute(string content);
 }
 
-public record Reimbursement();
+public record Commute(
+    DateTimeOffset DepartureUtc,
+    DateTimeOffset? ScheduledArrivalUtc,
+    CommuteTravelMethod ChosenTravel,
+    string Destination,
+    CarCommuteData Car,
+    PublicCommuteData Public);
 
-public record DriveWithPrivateCarReimbursement(int KM, string Description) : Reimbursement();
+public record CarCommuteData(
+    int AdditionalPassengers,
+    decimal DistanceKm,
+    int DurationMinutes,
+    decimal AverageConsumptionLPer100Km,
+    decimal FuelPricePerLiterEur);
 
-public record ExpenseReimbursement(int Amount, string Description) : Reimbursement();
+public record PublicCommuteData(int DurationMinutes, bool Delayed);
 
-public record Travel(
-    DateTimeOffset Start,
-    DateTimeOffset End,
-    string TravelerName,
-    string Purpose,
-    IEnumerable<Reimbursement> Reimbursements
-);
-
-public enum TravelParseError
+public enum CommuteParseError
 {
     EmptyFile,
-    InvalidHeaderFieldCount,
-    InvalidStartDateFormat,
-    InvalidEndDateFormat,
-    StartDateAfterEndDate,
-    EmptyTravelerName,
-    EmptyTripPurpose,
-    InvalidDriveFieldCount,
-    InvalidDriveDistance,
-    EmptyDriveDescription,
-    InvalidExpenseFieldCount,
-    InvalidExpenseAmount,
-    EmptyExpenseDescription,
-    InvalidEntryType
+    MissingHeaderSection,
+    MissingCarSection,
+    MissingPublicSection,
+    InvalidSeparator,
+    MissingRequiredField,
+    InvalidDepartureFormat,
+    InvalidScheduledArrivalFormat,
+    ScheduledArrivalBeforeOrEqualDeparture,
+    InvalidTravelMethod,
+    EmptyDestination,
+    InvalidMethodBlock,
+    InvalidNumericValue,
+    InvalidBooleanValue,
+    UnknownMethod,
+    MultipleCommutesNotAllowed
 }
 
-public class TravelParseException(TravelParseError errorCode)
+public class CommuteParseException(CommuteParseError errorCode)
     : Exception(ErrorMessages.TryGetValue(errorCode, out var message) ? message : "Unknown parsing error.")
 {
-    private static readonly Dictionary<TravelParseError, string> ErrorMessages = new()
+    private static readonly Dictionary<CommuteParseError, string> ErrorMessages = new()
     {
-        { TravelParseError.EmptyFile, "The travel file is empty." },
-        { TravelParseError.InvalidHeaderFieldCount, "Invalid number of fields in header." },
-        { TravelParseError.InvalidStartDateFormat, "Invalid start date format." },
-        { TravelParseError.InvalidEndDateFormat, "Invalid end date format." },
-        { TravelParseError.StartDateAfterEndDate, "Start date is after end date." },
-        { TravelParseError.EmptyTravelerName, "Traveler's name is empty." },
-        { TravelParseError.EmptyTripPurpose, "Trip purpose is empty." },
-        { TravelParseError.InvalidDriveFieldCount, "Invalid number of fields in DRIVE entry." },
-        { TravelParseError.InvalidDriveDistance, "Invalid distance in DRIVE entry (not a positive integer)." },
-        { TravelParseError.EmptyDriveDescription, "Empty description in DRIVE entry." },
-        { TravelParseError.InvalidExpenseFieldCount, "Invalid number of fields in EXPENSE entry." },
-        { TravelParseError.InvalidExpenseAmount, "Invalid amount in EXPENSE entry (not a positive integer)." },
-        { TravelParseError.EmptyExpenseDescription, "Empty description in EXPENSE entry." },
-        { TravelParseError.InvalidEntryType, "Invalid entry type (must be DRIVE or EXPENSE)." }
+        { CommuteParseError.EmptyFile, "The commute file is empty." },
+        { CommuteParseError.MissingHeaderSection, "The header section is missing." },
+        { CommuteParseError.MissingCarSection, "The CAR section is missing." },
+        { CommuteParseError.MissingPublicSection, "The PUBLIC section is missing." },
+        { CommuteParseError.InvalidSeparator, "Sections must be separated by an exact '=====' line." },
+        { CommuteParseError.MissingRequiredField, "A required field is missing." },
+        { CommuteParseError.InvalidDepartureFormat, "Departure is not a valid ISO-8601 UTC timestamp." },
+        { CommuteParseError.InvalidScheduledArrivalFormat, "Scheduled arrival is not a valid ISO-8601 UTC timestamp." },
+        { CommuteParseError.ScheduledArrivalBeforeOrEqualDeparture, "Scheduled arrival must be after departure." },
+        { CommuteParseError.InvalidTravelMethod, "Travel must be exactly CAR or PUBLIC." },
+        { CommuteParseError.EmptyDestination, "Destination must not be empty." },
+        { CommuteParseError.InvalidMethodBlock, "Method block content is invalid." },
+        { CommuteParseError.InvalidNumericValue, "One of the numeric values is invalid." },
+        { CommuteParseError.InvalidBooleanValue, "Boolean values must be true or false." },
+        { CommuteParseError.UnknownMethod, "Unknown method encountered. Only CAR and PUBLIC are allowed." },
+        { CommuteParseError.MultipleCommutesNotAllowed, "A commute file may contain exactly one commute." }
     };
 
-    public TravelParseError ErrorCode { get; } = errorCode;
+    public CommuteParseError ErrorCode { get; } = errorCode;
 }
 
-/// <summary>
-/// Implementation for parsing CSV content into Dummy objects
-/// </summary>
-public class TravelFileParser : ITravelFileParser
+public class CommuteFileParser : ICommuteFileParser
 {
-    public Travel ParseTravel(string csvContent)
-    {
-        // TODO: Add your code here
-        throw new NotImplementedException();
-    }
+    public Commute ParseCommute(string content)
+        => throw new NotImplementedException("Parser implementation is part of the exercise.");
 }
-
-
-

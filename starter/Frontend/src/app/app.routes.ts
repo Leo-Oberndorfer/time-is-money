@@ -4,9 +4,9 @@ import { TravelUpload } from './travel-upload/travel-upload';
 import { TravelsList } from './travels-list/travels-list';
 
 export const routes: Routes = [
-    { path: 'travels', component: TravelsList },
-    { path: 'travels/upload', component: TravelUpload },
-    { path: 'travels/:id', component: TravelDetails },
-    { path: '', redirectTo: '/travels', pathMatch: 'full' },
-    { path: '**', redirectTo: '/travels' }
+  { path: 'commutes', component: TravelsList },
+  { path: 'commutes/upload', component: TravelUpload },
+  { path: 'commutes/:id', component: TravelDetails },
+  { path: '', redirectTo: '/commutes', pathMatch: 'full' },
+  { path: '**', redirectTo: '/commutes' }
 ];

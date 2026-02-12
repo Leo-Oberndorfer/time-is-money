@@ -1,18 +1,13 @@
-import { Component, OnInit, inject, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-
-import { Api } from '../api/api';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { Component, computed, inject } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-travel-details',
-  imports: [RouterLink, DatePipe, DecimalPipe],
+  imports: [RouterLink],
   templateUrl: './travel-details.html',
   styleUrl: './travel-details.css'
 })
-export class TravelDetails implements OnInit {
-  private readonly api = inject(Api);
-
-  public ngOnInit(): void {
-  }
+export class TravelDetails {
+  private readonly route = inject(ActivatedRoute);
+  protected readonly commuteId = computed(() => this.route.snapshot.paramMap.get('id'));
 }

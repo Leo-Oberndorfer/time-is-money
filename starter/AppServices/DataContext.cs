@@ -6,34 +6,41 @@ namespace AppServices;
 
 public partial class ApplicationDataContext(DbContextOptions<ApplicationDataContext> options) : DbContext(options)
 {
-    public DbSet<TravelEntity> Travels => Set<TravelEntity>();
-    public DbSet<TravelReimbursementEntity> TravelReimbursements => Set<TravelReimbursementEntity>();
+    public DbSet<CommuteEntity> Commutes => Set<CommuteEntity>();
+    public DbSet<CarCommuteDataEntity> CarCommuteData => Set<CarCommuteDataEntity>();
+    public DbSet<PublicCommuteDataEntity> PublicCommuteData => Set<PublicCommuteDataEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TravelEntity>(entity =>
+        modelBuilder.Entity<CommuteEntity>(entity =>
         {
-            entity.ToTable("Travels");
-            entity.Property(e => e.Mileage).HasConversion<double>().HasColumnType("REAL");
-            entity.Property(e => e.PerDiem).HasConversion<double>().HasColumnType("REAL");
-            entity.Property(e => e.Expenses).HasConversion<double>().HasColumnType("REAL");
-            entity.HasMany(e => e.Reimbursements)
-                .WithOne(e => e.Travel)
-                .HasForeignKey(e => e.TravelId)
+            entity.ToTable("Commutes");
+            entity.Property(e => e.ChosenTravel).HasConversion<string>();
+            entity.Property(e => e.Verdict).HasConversion<string>();
+            entity.Property(e => e.EurPerMinutePerPerson).HasColumnType("REAL");
+
+            entity.HasOne(e => e.CarData)
+                .WithOne(c => c.Commute)
+                .HasForeignKey<CarCommuteDataEntity>(c => c.CommuteId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.PublicData)
+                .WithOne(p => p.Commute)
+                .HasForeignKey<PublicCommuteDataEntity>(p => p.CommuteId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<TravelReimbursementEntity>(entity =>
+        modelBuilder.Entity<CarCommuteDataEntity>(entity =>
         {
-            entity.ToTable("TravelReimbursements");
-            entity.HasDiscriminator<TravelReimbursementType>("Type")
-                .HasValue<DriveWithPrivateCarReimbursementEntity>(TravelReimbursementType.DriveWithPrivateCar)
-                .HasValue<ExpenseReimbursementEntity>(TravelReimbursementType.Expense);
+            entity.ToTable("CommuteCarData");
+            entity.Property(e => e.DistanceKm).HasColumnType("REAL");
+            entity.Property(e => e.AverageConsumptionLPer100Km).HasColumnType("REAL");
+            entity.Property(e => e.FuelPricePerLiterEur).HasColumnType("REAL");
         });
 
-        modelBuilder.Entity<DriveWithPrivateCarReimbursementEntity>(entity =>
+        modelBuilder.Entity<PublicCommuteDataEntity>(entity =>
         {
-            entity.Property(e => e.KM).HasColumnName("KM");
+            entity.ToTable("CommutePublicData");
         });
     }
 }
