@@ -1,1 +1,15 @@
-2026-01-19T07:00:00Z|2026-01-20T14:30:00Z|Max Mustermann|Per diem example from calculation-logic.md
+Departure: 2026-03-01T07:00:00Z
+Travel: PUBLIC
+Destination: Downtown
+Scheduled arrival: 2026-03-01T07:45:00Z
+=====
+Method: CAR
+Additional passengers: 2
+Distance: 18
+Duration: 30
+Average consumption: 6.2
+Spent: 1.65
+=====
+Method: PUBLIC
+Duration: 42
+Delayed: true
