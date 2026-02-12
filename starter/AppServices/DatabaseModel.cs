@@ -1,46 +1,37 @@
-﻿namespace AppServices;
+namespace AppServices;
 
-public class TravelEntity
+public class CommuteEntity
 {
     public int Id { get; set; }
 
-    public DateTimeOffset Start { get; set; }
-    public DateTimeOffset End { get; set; }
-    public string TravelerName { get; set; } = string.Empty;
-    public string Purpose { get; set; } = string.Empty;
+    public DateTimeOffset DepartureUtc { get; set; }
+    public DateTimeOffset? ScheduledArrivalUtc { get; set; }
+    public string Destination { get; set; } = string.Empty;
+    public CommuteTravelMethod ChosenTravelMethod { get; set; }
 
-    /// <summary>
-    /// Persisted reimbursement calculation result.
-    /// </summary>
-    public decimal Mileage { get; set; }
-    public decimal PerDiem { get; set; }
-    public decimal Expenses { get; set; }
+    public decimal CarDistanceKm { get; set; }
+    public int CarDurationMinutes { get; set; }
+    public decimal CarAverageConsumptionLPer100Km { get; set; }
+    public decimal CarSpentEur { get; set; }
+    public int? CarAdditionalPassengers { get; set; }
 
-    public List<TravelReimbursementEntity> Reimbursements { get; set; } = [];
+    public int PublicDurationMinutes { get; set; }
+    public bool PublicDelayed { get; set; }
+
+    // Persisted analysis values; to be computed by application logic in later exercises.
+    public CommuteDecisionVerdict? DecisionVerdict { get; set; }
+    public decimal? EurPerMinutePerPerson { get; set; }
 }
 
-public enum TravelReimbursementType
+public enum CommuteTravelMethod
 {
-    DriveWithPrivateCar = 1,
-    Expense = 2
+    Car = 1,
+    Public = 2
 }
 
-public abstract class TravelReimbursementEntity
+public enum CommuteDecisionVerdict
 {
-    public int Id { get; set; }
-
-    public int TravelId { get; set; }
-    public TravelEntity? Travel { get; set; }
-
-    public string Description { get; set; } = string.Empty;
-}
-
-public sealed class DriveWithPrivateCarReimbursementEntity : TravelReimbursementEntity
-{
-    public int KM { get; set; }
-}
-
-public sealed class ExpenseReimbursementEntity : TravelReimbursementEntity
-{
-    public int Amount { get; set; }
+    ChosenBetter = 1,
+    ChosenWorse = 2,
+    NoDifference = 3
 }

@@ -1,41 +1,25 @@
 <div class="page-header">
   <div>
-    <h1>Upload travel file</h1>
-    <p class="subtitle">Upload a travel .txt file and store it</p>
+    <h1>Commute file import</h1>
+    <p class="subtitle">Import endpoint ist vorbereitet, Logik folgt in der Übung</p>
   </div>
 
   <div class="actions">
-    <a class="button secondary" routerLink="/travels">Back to list</a>
+    <a class="button secondary" routerLink="/commutes">Zur Übersicht</a>
   </div>
 </div>
 
 <div class="card">
   <div class="form-row">
-    <label for="file">Travel file (.txt)</label>
-    <input
-      id="file"
-      type="file"
-      accept=".txt,text/plain"
-      (change)="onFileSelected($event)"
-      [disabled]="loading()"
-    />
-    <div class="hint">The backend will validate the file format.</div>
+    <label for="file">Commute-Datei (.txt)</label>
+    <input id="file" type="file" accept=".txt,text/plain" (change)="onFileSelected($event)" />
   </div>
+
+  @if (selectedFileName(); as fileName) {
+    <p class="hint">Ausgewählt: {{ fileName }}</p>
+  }
 
   <div class="form-row">
-    <button class="button" (click)="upload()" [disabled]="loading() || !selectedFile()">
-      @if (loading()) {
-        Uploading…
-      } @else {
-        Upload
-      }
-    </button>
+    <button class="button" type="button" (click)="importCommute()">Import starten</button>
   </div>
-
-  @if (error()) {
-    @let e = error()!;
-    <div class="alert error">
-      <strong>{{ e.errorCode }}:</strong> {{ e.message }}
-    </div>
-  }
 </div>

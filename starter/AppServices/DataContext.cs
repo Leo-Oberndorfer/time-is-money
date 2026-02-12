@@ -6,34 +6,18 @@ namespace AppServices;
 
 public partial class ApplicationDataContext(DbContextOptions<ApplicationDataContext> options) : DbContext(options)
 {
-    public DbSet<TravelEntity> Travels => Set<TravelEntity>();
-    public DbSet<TravelReimbursementEntity> TravelReimbursements => Set<TravelReimbursementEntity>();
+    public DbSet<CommuteEntity> Commutes => Set<CommuteEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TravelEntity>(entity =>
+        modelBuilder.Entity<CommuteEntity>(entity =>
         {
-            entity.ToTable("Travels");
-            entity.Property(e => e.Mileage).HasConversion<double>().HasColumnType("REAL");
-            entity.Property(e => e.PerDiem).HasConversion<double>().HasColumnType("REAL");
-            entity.Property(e => e.Expenses).HasConversion<double>().HasColumnType("REAL");
-            entity.HasMany(e => e.Reimbursements)
-                .WithOne(e => e.Travel)
-                .HasForeignKey(e => e.TravelId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        modelBuilder.Entity<TravelReimbursementEntity>(entity =>
-        {
-            entity.ToTable("TravelReimbursements");
-            entity.HasDiscriminator<TravelReimbursementType>("Type")
-                .HasValue<DriveWithPrivateCarReimbursementEntity>(TravelReimbursementType.DriveWithPrivateCar)
-                .HasValue<ExpenseReimbursementEntity>(TravelReimbursementType.Expense);
-        });
-
-        modelBuilder.Entity<DriveWithPrivateCarReimbursementEntity>(entity =>
-        {
-            entity.Property(e => e.KM).HasColumnName("KM");
+            entity.ToTable("Commutes");
+            entity.Property(e => e.CarDistanceKm).HasConversion<double>().HasColumnType("REAL");
+            entity.Property(e => e.CarAverageConsumptionLPer100Km).HasConversion<double>().HasColumnType("REAL");
+            entity.Property(e => e.CarSpentEur).HasConversion<double>().HasColumnType("REAL");
+            entity.Property(e => e.EurPerMinutePerPerson).HasConversion<double>().HasColumnType("REAL");
+            entity.Property(e => e.Destination).HasMaxLength(256);
         });
     }
 }

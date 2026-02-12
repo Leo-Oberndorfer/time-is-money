@@ -25,12 +25,11 @@
         }
       }
     },
-    "/travels/upload": {
+    "/commutes/import": {
       "post": {
         "tags": [
-          "Travels"
+          "Commutes"
         ],
-        "description": "Uploads a travel .txt file, parses it, stores it, and returns the created travel.",
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -56,7 +55,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TravelDetailsDto"
+                  "$ref": "#/components/schemas/CommuteDetailsDto"
                 }
               }
             }
@@ -66,7 +65,81 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TravelUploadErrorDto"
+                  "$ref": "#/components/schemas/CommuteUploadErrorDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/commutes": {
+      "get": {
+        "tags": [
+          "Commutes"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommuteListItemDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/commutes/{id}": {
+      "get": {
+        "tags": [
+          "Commutes"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommuteDetailsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/commutes/statistics": {
+      "get": {
+        "tags": [
+          "Commutes"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommuteStatisticsDto"
                 }
               }
             }
@@ -77,17 +150,87 @@
   },
   "components": {
     "schemas": {
-      "TravelDetailsDto": {
+      "CarCommuteDto": {
+        "required": [
+          "distanceKm",
+          "durationMinutes",
+          "averageConsumptionLPer100Km",
+          "spentEur",
+          "additionalPassengers"
+        ],
+        "type": "object",
+        "properties": {
+          "distanceKm": {
+            "type": "number",
+            "format": "double"
+          },
+          "durationMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "averageConsumptionLPer100Km": {
+            "type": "number",
+            "format": "double"
+          },
+          "spentEur": {
+            "type": "number",
+            "format": "double"
+          },
+          "additionalPassengers": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "CommuteAnalysisDto": {
+        "required": [
+          "carArrivalUtc",
+          "publicArrivalUtc",
+          "carPoints",
+          "publicPoints",
+          "decisionVerdict",
+          "eurPerMinutePerPerson"
+        ],
+        "type": "object",
+        "properties": {
+          "carArrivalUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "publicArrivalUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "carPoints": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "publicPoints": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "decisionVerdict": {
+            "type": "string"
+          },
+          "eurPerMinutePerPerson": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "nullable": true
+      },
+      "CommuteDetailsDto": {
         "required": [
           "id",
-          "start",
-          "end",
-          "travelerName",
-          "purpose",
-          "mileage",
-          "perDiem",
-          "expenses",
-          "reimbursements"
+          "departureUtc",
+          "destination",
+          "chosenTravelMethod",
+          "scheduledArrivalUtc",
+          "car",
+          "public",
+          "analysis"
         ],
         "type": "object",
         "properties": {
@@ -95,47 +238,42 @@
             "type": "integer",
             "format": "int32"
           },
-          "start": {
+          "departureUtc": {
             "type": "string",
             "format": "date-time"
           },
-          "end": {
+          "destination": {
+            "type": "string"
+          },
+          "chosenTravelMethod": {
+            "type": "string"
+          },
+          "scheduledArrivalUtc": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
-          "travelerName": {
-            "type": "string"
+          "car": {
+            "$ref": "#/components/schemas/CarCommuteDto"
           },
-          "purpose": {
-            "type": "string"
+          "public": {
+            "$ref": "#/components/schemas/PublicCommuteDto"
           },
-          "mileage": {
-            "type": "number",
-            "format": "double"
-          },
-          "perDiem": {
-            "type": "number",
-            "format": "double"
-          },
-          "expenses": {
-            "type": "number",
-            "format": "double"
-          },
-          "reimbursements": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TravelReimbursementDto"
-            }
+          "analysis": {
+            "$ref": "#/components/schemas/CommuteAnalysisDto"
           }
         }
       },
-      "TravelReimbursementDto": {
+      "CommuteListItemDto": {
         "required": [
           "id",
-          "type",
-          "description",
-          "km",
-          "amount"
+          "departureUtc",
+          "destination",
+          "chosenTravelMethod",
+          "carDurationMinutes",
+          "publicDurationMinutes",
+          "decisionVerdict",
+          "eurPerMinutePerPerson"
         ],
         "type": "object",
         "properties": {
@@ -143,25 +281,109 @@
             "type": "integer",
             "format": "int32"
           },
-          "type": {
+          "departureUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "destination": {
             "type": "string"
           },
-          "description": {
+          "chosenTravelMethod": {
             "type": "string"
           },
-          "km": {
+          "carDurationMinutes": {
             "type": "integer",
-            "format": "int32",
+            "format": "int32"
+          },
+          "publicDurationMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "decisionVerdict": {
+            "type": "string",
             "nullable": true
           },
-          "amount": {
-            "type": "integer",
-            "format": "int32",
+          "eurPerMinutePerPerson": {
+            "type": "number",
+            "format": "double",
             "nullable": true
           }
         }
       },
-      "TravelUploadErrorDto": {
+      "CommuteStatisticsDto": {
+        "required": [
+          "countCarChosen",
+          "countPublicChosen",
+          "avgDurationCar",
+          "avgDurationPublic",
+          "avgFuelCostCarChosen",
+          "totalSpentEur",
+          "totalSavedEur",
+          "totalKmCarChosen",
+          "totalFuelLitersCarChosen",
+          "totalCo2Grams",
+          "totalDelaysPublic",
+          "goodDecisionsCount",
+          "badDecisionsCount"
+        ],
+        "type": "object",
+        "properties": {
+          "countCarChosen": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "countPublicChosen": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "avgDurationCar": {
+            "type": "number",
+            "format": "double"
+          },
+          "avgDurationPublic": {
+            "type": "number",
+            "format": "double"
+          },
+          "avgFuelCostCarChosen": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalSpentEur": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalSavedEur": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalKmCarChosen": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalFuelLitersCarChosen": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalCo2Grams": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalDelaysPublic": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "goodDecisionsCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "badDecisionsCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CommuteUploadErrorDto": {
         "required": [
           "errorCode",
           "message"
@@ -175,6 +397,22 @@
             "type": "string"
           }
         }
+      },
+      "PublicCommuteDto": {
+        "required": [
+          "durationMinutes",
+          "delayed"
+        ],
+        "type": "object",
+        "properties": {
+          "durationMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "delayed": {
+            "type": "boolean"
+          }
+        }
       }
     }
   },
@@ -183,7 +421,7 @@
       "name": "WebApi"
     },
     {
-      "name": "Travels"
+      "name": "Commutes"
     }
   ]
 }

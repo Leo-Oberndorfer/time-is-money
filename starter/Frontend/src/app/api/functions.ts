@@ -3,5 +3,11 @@
 
 export type { PingGet$Params as PingGet$Params } from './fn/web-api/ping-get';
 export { pingGet as pingGet } from './fn/web-api/ping-get';
-export type { TravelsUploadPost$Params as TravelsUploadPost$Params } from './fn/travels/travels-upload-post';
-export { travelsUploadPost as travelsUploadPost } from './fn/travels/travels-upload-post';
+export type { CommutesImportPost$Params as CommutesImportPost$Params } from './fn/commutes/commutes-import-post';
+export { commutesImportPost as commutesImportPost } from './fn/commutes/commutes-import-post';
+export type { CommutesGet$Params as CommutesGet$Params } from './fn/commutes/commutes-get';
+export { commutesGet as commutesGet } from './fn/commutes/commutes-get';
+export type { CommutesIdGet$Params as CommutesIdGet$Params } from './fn/commutes/commutes-id-get';
+export { commutesIdGet as commutesIdGet } from './fn/commutes/commutes-id-get';
+export type { CommutesStatisticsGet$Params as CommutesStatisticsGet$Params } from './fn/commutes/commutes-statistics-get';
+export { commutesStatisticsGet as commutesStatisticsGet } from './fn/commutes/commutes-statistics-get';
