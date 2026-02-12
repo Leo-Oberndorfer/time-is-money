@@ -1,41 +1,23 @@
 <div class="page-header">
   <div>
-    <h1>Upload travel file</h1>
-    <p class="subtitle">Upload a travel .txt file and store it</p>
+    <h1>Upload commute file</h1>
+    <p class="subtitle">Starter upload view (not fully implemented)</p>
   </div>
 
   <div class="actions">
-    <a class="button secondary" routerLink="/travels">Back to list</a>
+    <a class="button secondary" routerLink="/commutes">Back to list</a>
   </div>
 </div>
 
 <div class="card">
   <div class="form-row">
-    <label for="file">Travel file (.txt)</label>
-    <input
-      id="file"
-      type="file"
-      accept=".txt,text/plain"
-      (change)="onFileSelected($event)"
-      [disabled]="loading()"
-    />
-    <div class="hint">The backend will validate the file format.</div>
+    <label for="file">Commute file (.txt)</label>
+    <input id="file" type="file" accept=".txt,text/plain" (change)="onFileSelected($event)" />
   </div>
 
   <div class="form-row">
-    <button class="button" (click)="upload()" [disabled]="loading() || !selectedFile()">
-      @if (loading()) {
-        Uploading…
-      } @else {
-        Upload
-      }
-    </button>
+    <button class="button" (click)="upload()" [disabled]="!selectedFile()">Upload</button>
   </div>
 
-  @if (error()) {
-    @let e = error()!;
-    <div class="alert error">
-      <strong>{{ e.errorCode }}:</strong> {{ e.message }}
-    </div>
-  }
+  <p class="hint">TODO: call POST /commutes/upload and show parser errors.</p>
 </div>

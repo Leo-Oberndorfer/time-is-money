@@ -1,87 +1,72 @@
-using System.Globalization;
-
 namespace AppServices;
 
-/// <summary>
-/// Interface for parsing a travel file
-/// </summary>
-public interface ITravelFileParser
+public interface ICommuteFileParser
 {
-    /// <summary>
-    /// Parses travel file content into a <see cref="Travel"/> object
-    /// </summary>
-    /// <param name="textContent">Travel file content as string</param>
-    /// <returns>Parsed <see cref="Travel"/> object</returns>
-    Travel ParseTravel(string csvContent);
+    CommuteDraft Parse(string textContent);
 }
 
-public record Reimbursement();
+public record CommuteDraft(
+    DateTimeOffset DepartureUtc,
+    DateTimeOffset? ScheduledArrivalUtc,
+    string Destination,
+    CommuteMethod ChosenTravel,
+    CarCommuteDraft Car,
+    PublicCommuteDraft Public);
 
-public record DriveWithPrivateCarReimbursement(int KM, string Description) : Reimbursement();
+public record CarCommuteDraft(
+    int AdditionalPassengers,
+    decimal DistanceKm,
+    int DurationMinutes,
+    decimal AverageConsumptionLPer100Km,
+    decimal FuelPricePerLiterEur);
 
-public record ExpenseReimbursement(int Amount, string Description) : Reimbursement();
+public record PublicCommuteDraft(int DurationMinutes, bool Delayed);
 
-public record Travel(
-    DateTimeOffset Start,
-    DateTimeOffset End,
-    string TravelerName,
-    string Purpose,
-    IEnumerable<Reimbursement> Reimbursements
-);
-
-public enum TravelParseError
+public enum CommuteParseError
 {
     EmptyFile,
-    InvalidHeaderFieldCount,
-    InvalidStartDateFormat,
-    InvalidEndDateFormat,
-    StartDateAfterEndDate,
-    EmptyTravelerName,
-    EmptyTripPurpose,
-    InvalidDriveFieldCount,
-    InvalidDriveDistance,
-    EmptyDriveDescription,
-    InvalidExpenseFieldCount,
-    InvalidExpenseAmount,
-    EmptyExpenseDescription,
-    InvalidEntryType
+    InvalidSeparator,
+    MissingHeaderBlock,
+    MissingCarBlock,
+    MissingPublicBlock,
+    MissingRequiredField,
+    InvalidDateFormat,
+    ScheduledArrivalBeforeDeparture,
+    InvalidMethod,
+    EmptyDestination,
+    InvalidNumber,
+    InvalidBoolean,
+    UnknownField
 }
 
-public class TravelParseException(TravelParseError errorCode)
-    : Exception(ErrorMessages.TryGetValue(errorCode, out var message) ? message : "Unknown parsing error.")
+public class CommuteParseException(CommuteParseError errorCode, string? details = null)
+    : Exception($"{GetMessage(errorCode)}{(string.IsNullOrWhiteSpace(details) ? string.Empty : $": {details}")}")
 {
-    private static readonly Dictionary<TravelParseError, string> ErrorMessages = new()
+    private static string GetMessage(CommuteParseError errorCode) => errorCode switch
     {
-        { TravelParseError.EmptyFile, "The travel file is empty." },
-        { TravelParseError.InvalidHeaderFieldCount, "Invalid number of fields in header." },
-        { TravelParseError.InvalidStartDateFormat, "Invalid start date format." },
-        { TravelParseError.InvalidEndDateFormat, "Invalid end date format." },
-        { TravelParseError.StartDateAfterEndDate, "Start date is after end date." },
-        { TravelParseError.EmptyTravelerName, "Traveler's name is empty." },
-        { TravelParseError.EmptyTripPurpose, "Trip purpose is empty." },
-        { TravelParseError.InvalidDriveFieldCount, "Invalid number of fields in DRIVE entry." },
-        { TravelParseError.InvalidDriveDistance, "Invalid distance in DRIVE entry (not a positive integer)." },
-        { TravelParseError.EmptyDriveDescription, "Empty description in DRIVE entry." },
-        { TravelParseError.InvalidExpenseFieldCount, "Invalid number of fields in EXPENSE entry." },
-        { TravelParseError.InvalidExpenseAmount, "Invalid amount in EXPENSE entry (not a positive integer)." },
-        { TravelParseError.EmptyExpenseDescription, "Empty description in EXPENSE entry." },
-        { TravelParseError.InvalidEntryType, "Invalid entry type (must be DRIVE or EXPENSE)." }
+        CommuteParseError.EmptyFile => "The commute file is empty",
+        CommuteParseError.InvalidSeparator => "Expected separator line '====='",
+        CommuteParseError.MissingHeaderBlock => "Header block is missing",
+        CommuteParseError.MissingCarBlock => "CAR block is missing",
+        CommuteParseError.MissingPublicBlock => "PUBLIC block is missing",
+        CommuteParseError.MissingRequiredField => "A required field is missing",
+        CommuteParseError.InvalidDateFormat => "A date field is invalid",
+        CommuteParseError.ScheduledArrivalBeforeDeparture => "Scheduled arrival must be after departure",
+        CommuteParseError.InvalidMethod => "Method must be CAR or PUBLIC",
+        CommuteParseError.EmptyDestination => "Destination must not be empty",
+        CommuteParseError.InvalidNumber => "Numeric value is invalid",
+        CommuteParseError.InvalidBoolean => "Boolean value is invalid",
+        CommuteParseError.UnknownField => "Unknown field in file",
+        _ => "Unknown parse error"
     };
 
-    public TravelParseError ErrorCode { get; } = errorCode;
+    public CommuteParseError ErrorCode { get; } = errorCode;
 }
 
-/// <summary>
-/// Implementation for parsing CSV content into Dummy objects
-/// </summary>
-public class TravelFileParser : ITravelFileParser
+public class CommuteFileParser : ICommuteFileParser
 {
-    public Travel ParseTravel(string csvContent)
+    public CommuteDraft Parse(string textContent)
     {
-        // TODO: Add your code here
-        throw new NotImplementedException();
+        throw new NotImplementedException("Parser implementation is intentionally left for the exercise.");
     }
 }
-
-
-

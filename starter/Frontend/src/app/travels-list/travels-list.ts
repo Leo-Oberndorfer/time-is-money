@@ -1,7 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-import { Api } from '../api/api';
 
 @Component({
   selector: 'app-travels-list',
@@ -10,8 +8,5 @@ import { Api } from '../api/api';
   styleUrl: './travels-list.css'
 })
 export class TravelsList {
-  private readonly api = inject(Api);
-
-  async ngOnInit() {
-  }
+  protected readonly loading = signal(false);
 }
