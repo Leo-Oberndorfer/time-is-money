@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "run-script-os",
     "start:darwin:linux": "node build/set-env.js && npm run generate-web-api && ng serve --port $PORT",
-    "start:win32": "node build/set-env.js && npm run generate-web-api && ng serve --port %PORT%",
+    "start": "node build/set-env.js && npm run generate-web-api && ng serve --port %PORT%",
     "build": "ng build",
     "test": "ng test",
     "generate-web-api": "npx ng-openapi-gen --input WebApi.json --output src/app/api"
