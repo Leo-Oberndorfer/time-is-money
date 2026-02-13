@@ -2,7 +2,7 @@ using AppServices;
 
 namespace WebApi;
 
-public static class TravelEndpoints
+public static class CommuteEndpoints
 {
     public static IEndpointRouteBuilder MapTravelEndpoints(this IEndpointRouteBuilder app)
     {

@@ -2,7 +2,7 @@ using System.Net;
 
 namespace WebApiTests;
 
-public class TravelIntegrationTests(WebApiTestFixture fixture) : IClassFixture<WebApiTestFixture>
+public class CommuteIntegrationTests(WebApiTestFixture fixture) : IClassFixture<WebApiTestFixture>
 {
     [Fact]
     public async Task GetCommutes_EndpointIsRegistered()

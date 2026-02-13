@@ -7,7 +7,7 @@ builder.AddServiceDefaults();
 builder.AddSqliteDbContext<ApplicationDataContext>("database");
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<ICommuteAnalysisService, CommuteAnalysisService>();
-builder.Services.AddScoped<ITravelFileParser, TravelFileParser>();
+builder.Services.AddScoped<ITravelFileParser, CommuteFileParser>();
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 

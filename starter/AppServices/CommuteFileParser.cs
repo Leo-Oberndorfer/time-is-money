@@ -70,7 +70,7 @@ public class CommuteParseException(CommuteParseError errorCode)
     public CommuteParseError ErrorCode { get; } = errorCode;
 }
 
-public class TravelFileParser : ITravelFileParser
+public class CommuteFileParser : ITravelFileParser
 {
     public Commute ParseCommute(string textContent)
     {

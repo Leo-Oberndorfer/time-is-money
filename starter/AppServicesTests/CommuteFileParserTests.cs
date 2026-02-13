@@ -2,12 +2,12 @@ using AppServices;
 
 namespace AppServicesTests;
 
-public class TravelFileParserTests
+public class CommuteFileParserTests
 {
     [Fact]
     public void ParseCommute_NotImplemented_Throws()
     {
-        var parser = new TravelFileParser();
+        var parser = new CommuteFileParser();
 
         Assert.Throws<NotImplementedException>(() => parser.ParseCommute("Departure: 2026-02-06T14:30:00Z"));
     }
