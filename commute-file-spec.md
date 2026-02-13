@@ -24,7 +24,7 @@ Spent: 1.54
 =====
 Method: PUBLIC
 Duration: 65
-Delayed: False
+Delayed: false
 ```
 
 ## Specifications
